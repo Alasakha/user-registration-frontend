@@ -10,7 +10,6 @@ import { useAuthStore } from '../stores/auth';
 const routes = [
   { path: '/', redirect: '/home' },
   { path: '/login', name: 'Login', component: Login },
-  { path: '/register', name: 'Register', component: Register },
   {
     path: '/home',
     name: 'Home',
@@ -19,10 +18,24 @@ const routes = [
     children: [
       {
         path: 'register', // 子路由路径，相对于 /home
-        name: 'Register',
+        name: 'Register1',
         component: Register,
       },
 ]
+    },
+    {
+      path: '/manage',
+      name: 'Manage',
+      children:[
+        {
+          path: '/manage/register',
+          name:'Register2',
+          component:Register
+        }
+      ]
+      
+
+
     }
 ];
 
