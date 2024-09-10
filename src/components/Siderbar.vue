@@ -13,16 +13,41 @@
         @close="handleClose"
       >
         <!-- 动态生成菜单项 -->
-        <el-menu-item
-          v-for="(item, index) in menuItems"
-          :key="index"
-          :index="item.path"
-        >
-          <el-icon>
-            <component :is="getIconComponent(item.icon)" />
-          </el-icon>
-          <span>{{ item.label }}</span>
-        </el-menu-item>
+        <template v-for="(item, index) in menuItems">
+          <el-sub-menu
+            v-if="item.children && item.children.length > 0"
+            :key="'submenu-' + index"
+            :index="item.path"
+          >
+            <template #title>
+              <el-icon>
+                <component :is="getIconComponent(item.icon)" />
+              </el-icon>
+              <span>{{ item.label }}</span>
+            </template>
+            <!-- 二级菜单项 -->
+            <el-menu-item
+              v-for="(child, childIndex) in item.children"
+              :key="'submenu-item-' + childIndex"
+              :index="child.path"
+            >
+              <el-icon>
+                <component :is="getIconComponent(child.icon)" />
+              </el-icon>
+              <span>{{ child.label }}</span>
+            </el-menu-item>
+          </el-sub-menu>
+          <el-menu-item
+            v-else
+            :key="'menu-item-' + index"
+            :index="item.path"
+          >
+            <el-icon>
+              <component :is="getIconComponent(item.icon)" />
+            </el-icon>
+            <span>{{ item.label }}</span>
+          </el-menu-item>
+        </template>
       </el-menu>
     </el-col>
   </el-row>
@@ -57,7 +82,10 @@ onMounted(() => {
       console.log(response);
       menuItems.value = response.data;
       console.log(menuItems);
-    })
-   
+    });
 });
 </script>
+
+<style>
+/* 自定义样式（如果需要） */
+</style>

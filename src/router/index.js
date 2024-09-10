@@ -1,44 +1,34 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
-import Register from '../views/Register.vue'
-import Login from '../views/Login.vue'
-import Home from '../views/Home.vue'
-import ItemOne from '../views/Register.vue'
+
 import { useAuthStore } from '../stores/auth';
 
 
+// router/index.js
 const routes = [
-  { path: '/', redirect: '/home' },
-  { path: '/login', name: 'Login', component: Login },
   {
-    path: '/home',
-    name: 'Home',
-    component: Home,
-    meta: { requiresAuth: true },
+    path: '/',
+    component: () => import('../views/Layout.vue'),
+    // 重定向到仪表盘页面
     children: [
       {
-        path: 'register', // 子路由路径，相对于 /home
-        name: 'Register1',
-        component: Register,
+        path: 'manage',
+        componet:()=>import('../views/Manage.vue'),
+        children: [
+          {
+            path:'register',
+            component: () => import('../views/Register.vue'),
+          }
+        ]
       },
-]
-    },
-    {
-      path: '/manage',
-      name: 'Manage',
-      children:[
-        {
-          path: '/manage/register',
-          name:'Register2',
-          component:Register
-        }
-      ]
-      
 
-
-    }
+    ],
+  },
+  {
+    path: '/login',
+    component: () => import('../views/Login.vue'),
+  },
 ];
-
 
 const router = createRouter({
   history: createWebHistory(),
@@ -53,7 +43,7 @@ router.beforeEach(async (to, from, next) => {
 
     // 如果已经登录且试图访问登录页面，则重定向到 /home
     if (isAuthenticated && to.path === '/login') {
-      next('/home');
+      next('/');
     } 
 
     // 如果目标路由需要身份验证且用户未登录，则重定向到 /login

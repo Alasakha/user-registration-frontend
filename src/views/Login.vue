@@ -78,7 +78,7 @@
               authStore.setToken(token);
       
               // 获取用户信息
-              const userInfoResponse = await axios.get('http://localhost:8080/home/user/info', {
+              const userInfoResponse = await axios.get('http://localhost:8080/user/info', {
                 headers: {
                   'Authorization': `Bearer ${token}`
                 }
@@ -88,7 +88,7 @@
               console.log('User info:', userInfoResponse.data);
       
               // 跳转到首页
-              router.push('/home');
+              router.push('/');
             } catch (error) {
               // 这里不需要显示错误提示，错误会由拦截器处理
               console.error('Error during login or fetching user info:', error);

@@ -10,7 +10,7 @@ const router = useRouter();
 onMounted(async () => {
   if (authStore.isAuthenticated()) {
     try {
-      const response = await axios.get('http://localhost:8080/home/user/info', {
+      const response = await axios.get('http://localhost:8080/user/info', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
