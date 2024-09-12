@@ -45,5 +45,7 @@ onMounted(async () => {
   filter: drop-shadow(0 0 2em #42b883aa);
 }
 
-
+body{
+  background-color:rgba(248, 248, 248, 0.048) ;
+}
 </style>

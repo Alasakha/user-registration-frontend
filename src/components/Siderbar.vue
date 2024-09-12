@@ -30,6 +30,7 @@
               v-for="(child, childIndex) in item.children"
               :key="'submenu-item-' + childIndex"
               :index="child.path"
+              @click="handleMenuClick(child.path,child.label)"
             >
               <el-icon>
                 <component :is="getIconComponent(child.icon)" />
@@ -41,6 +42,7 @@
             v-else
             :key="'menu-item-' + index"
             :index="item.path"
+            @click="handleMenuClick(item.path,item.label)" 
           >
             <el-icon>
               <component :is="getIconComponent(item.icon)" />
@@ -55,10 +57,23 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useRoute} from 'vue-router';
 import { getmenu } from '../api/menu';
 import { Setting, Location } from '@element-plus/icons-vue';
+import { useTabsStore } from '../stores/tabs'
 
 const menuItems = ref([]);
+const router = useRouter()
+const route = useRoute()
+const tabsStore = useTabsStore(); // 获取标签页的store
+
+// 获取菜单数据
+onMounted(() => {
+  getmenu().then(response => {
+    menuItems.value = response.data;
+  });
+});
 
 // 映射图标函数
 const getIconComponent = (iconName: string) => {
@@ -76,16 +91,26 @@ const handleClose = (key: string, keyPath: string[]) => {
   console.log(key, keyPath);
 };
 
-onMounted(() => {
-  getmenu()
-    .then(response => {
-      console.log(response);
-      menuItems.value = response.data;
-      console.log(menuItems);
-    });
-});
+// 处理菜单点击事件
+const handleMenuClick = (path: string, name: string) => {
+  tabsStore.addTab({ route: path, name: name }); // 添加标签页
+  tabsStore.setActiveIndex(path); // 设置当前激活的标签页
+  // 保存到 localStorage
+  localStorage.setItem('tabs', JSON.stringify(tabsStore.openTabs));
+  localStorage.setItem('activeIndex', path);
+  router.push(path); // 路由切换
+};
+
 </script>
 
 <style>
-/* 自定义样式（如果需要） */
+.sidebar__logo {
+  padding: 10px;
+  text-align: center;
+  color: #fff;
+  background-color: #303133;
+}
+.el-menu-vertical-demo {
+  width: 100%;
+}
 </style>

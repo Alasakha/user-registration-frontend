@@ -8,7 +8,9 @@
         <el-header style="text-align: right; font-size: 12px">
           <Header></Header>
         </el-header>
-        <el-main>
+        <Tagbar></Tagbar>
+
+        <el-main style="background-color:rgb(248, 248 , 248) ;">
           <!-- 使用 v-slot 来获取路由组件 -->
           <router-view v-slot="{ Component }">
             <!-- 将动态路由组件包裹在 <transition> 中 -->
@@ -30,6 +32,7 @@
 import Asidebar from '../components/Siderbar.vue'
 import Header from '../components/Header.vue'
 import { useAuthStore } from '../stores/auth';
+import Tagbar from '../components/Tagbar.vue'
 
 const authStore = useAuthStore();
 
@@ -40,6 +43,9 @@ function handleLogout() {
 </script>
 
 <style scoped lang="scss">
+
+
+
 .el-container {
   height: 100vh;
 }

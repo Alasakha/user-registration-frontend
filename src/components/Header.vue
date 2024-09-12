@@ -12,22 +12,31 @@
             </template>
           </el-dropdown>
         </div>
-      </template>
-      
-      <script setup>
-      import { computed } from 'vue'
-      import { useAuthStore } from '../stores/auth'
-      import { storeToRefs } from 'pinia';
-      const authStore = useAuthStore()
-      const {userInfo} = storeToRefs(authStore)
+<div class="tag_box">
 
-          // 定义登出处理函数
-      function handleLogout() {
-        authStore.logout();
-      }
-//       // 从 Pinia 获取用户信息
-//       const userInfo = computed(() => authStore.userInfo)
-//       console.log(userInfo);
+
+</div>
+  </template>
       
-      console.log('User Info in Header:', userInfo.value);  // 调试输出
-      </script>
+<script setup>
+import { computed ,ref} from 'vue'
+import { useAuthStore } from '../stores/auth'
+import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router'
+const authStore = useAuthStore()
+const {userInfo} = storeToRefs(authStore)
+const router = useRouter()
+
+// 定义登出处理函数
+function handleLogout() {
+  authStore.logout();
+}
+
+
+
+</script>
+
+
+<style>
+
+</style>

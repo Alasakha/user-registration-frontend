@@ -10,3 +10,14 @@ export function login(data) {
     });
 }
 
+// 动态传递分页参数的 getrole 函数
+export function getrole(page, pageSize) {
+    return request({
+        url: '/manage/userrole',
+        method: 'get',
+        params: {
+            page: page,       // 当前页
+            pageSize: pageSize // 每页显示的条数
+        }
+    });
+}
