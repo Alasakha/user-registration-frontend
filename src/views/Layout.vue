@@ -15,13 +15,14 @@
           <router-view v-slot="{ Component }">
             <!-- 将动态路由组件包裹在 <transition> 中 -->
             <transition name="fade">
-              <component :is="Component" :key="$route.fullPath" />
+              <div>
+                <component :is="Component" :key="$route.fullPath" />
+              </div>
             </transition>
           </router-view>
-          main
-        </el-main>
+                  </el-main>
         <el-footer>
-          <button @click="handleLogout">Logout</button>
+        
         </el-footer>
       </el-container>
     </el-container>

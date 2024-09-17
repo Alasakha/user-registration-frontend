@@ -21,3 +21,17 @@ export function getrole(page, pageSize) {
         }
     });
 }
+
+export function getdepart() {
+    return request({
+        url: '/manage/userrole/departments',
+        method: 'get',
+    });
+}
+
+export function getposition(){
+    return request({
+        url: '/manage/positions',
+        method: 'get'
+    })
+}
