@@ -29,9 +29,3 @@ export function getdepart() {
     });
 }
 
-export function getposition(){
-    return request({
-        url: '/manage/positions',
-        method: 'get'
-    })
-}
