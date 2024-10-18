@@ -26,10 +26,14 @@ const routes = [
           {
             path:'positions',
             component: () => import('../views/Positions/Positions.vue'),
-          }
+          },
+          
         ]
       },
-
+      {
+        path:'personal',
+        component:()=> import('../views/PersonalCenter.vue')
+      }
     ],
   },
   {
