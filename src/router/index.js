@@ -1,74 +1,51 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
+import { getmenu } from '../api/menu' // 引入封装好的 getmenu 请求方法
 
-import { useAuthStore } from '../stores/auth';
-
-
-// router/index.js
+// 示例基础路由
 const routes = [
-  {
-    path: '/',
-    component: () => import('../views/Layout.vue'),
-    // 重定向到仪表盘页面
-    children: [
-      {
-        path: 'manage',
-        componet:()=>import('../views/Manage.vue'),
-        children: [
-          {
-            path:'register',
-            component: () => import('../views/Register.vue'),
-          },
-          {
-            path:'userrole',
-            component: () => import('../views/UserRole.vue'),
-          },
-          {
-            path:'positions',
-            component: () => import('../views/Positions/Positions.vue'),
-          },
-          
-        ]
-      },
-      {
-        path:'personal',
-        component:()=> import('../views/PersonalCenter.vue')
-      }
-    ],
-  },
-  {
-    path: '/login',
-    component: () => import('../views/Login.vue'),
-  },
-];
+    { path: '/', redirect: '/home' },
+    { path: '/login', component: () => import('../views/Login.vue') },
+    { path: '/home', component: () => import('../views/Layout.vue') } // 添加 /home 路由
+]
 
+// 递归函数：将菜单树转换为路由数组
+function generateRoutes(menuTree) {
+    const routes = []
+    menuTree.forEach(menu => {
+        const route = {
+            path: menu.path,
+            name: menu.name,
+            component: () => import(`../views${menu.path}.vue`) // 假设视图文件路径与菜单路径一致
+        }
+        if (menu.children && menu.children.length > 0) {
+            route.children = generateRoutes(menu.children) // 递归处理子菜单
+        }
+        routes.push(route)
+    })
+    return routes
+}
+
+// 获取菜单数据后，生成动态路由
+function setupDynamicRoutes(menuData) {
+    const dynamicRoutes = generateRoutes(menuData)
+    dynamicRoutes.forEach(route => {
+        router.addRoute(route) // 将动态路由添加到路由实例中
+    })
+}
+
+// 创建路由实例
 const router = createRouter({
-  history: createWebHistory(),
-  routes
+    history: createWebHistory(),
+    routes
 })
 
-router.beforeEach(async (to, from, next) => {
-  const authStore = useAuthStore();
-  try {
-    const token = authStore.token;  // 从 store 中获取 token
-    const isAuthenticated = token ? true : false;  // 根据是否有 token 判断用户是否已登录
+// 使用封装的 getmenu 方法获取菜单数据并设置动态路由
+getmenu()
+    .then(response => {
+        setupDynamicRoutes(response.data) // 假设 getmenu 返回的数据在 response.data 中
+    })
+    .catch(error => {
+        console.error('获取菜单数据失败:', error)
+    })
 
-    // 如果已经登录且试图访问登录页面，则重定向到 /home
-    if (isAuthenticated && to.path === '/login') {
-      next('/');
-    } 
-
-    // 如果目标路由需要身份验证且用户未登录，则重定向到 /login
-    else if (to.meta.requiresAuth && !isAuthenticated) {
-      next('/login');
-    } 
-    // 如果已登录或者不需要身份验证，继续导航
-    else {
-      next();
-    }
-  } catch (error) {
-    console.error('Authentication check failed', error);
-    next('/login');
-  }
-});
 export default router

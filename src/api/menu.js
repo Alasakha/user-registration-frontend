@@ -2,8 +2,9 @@
 import request from '../utils/requset'; // 引入封装好的 axios 实例
 
 export const getmenu = () => {
-        return request.get('/menu')
+        return request.get('/manage/getmenu')
           .then(response => {
+            console.log(response)
             return response;  // 确保返回数据正确
           })
           .catch(error => {

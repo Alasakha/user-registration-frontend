@@ -12,3 +12,17 @@ export const createDepartment = async (departmentData) => {
         console.error('创建部门失败:', error);
         throw error;  // 重新抛出错误以供上层处理
     }}
+
+    export const deleteDepartment = (id) => {
+        return request({
+            url: `/manage/deltedepart/${id}`,
+            method: 'delete',
+        })
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            console.error("Error deleting department:", error);
+            throw error;
+        });
+    };
