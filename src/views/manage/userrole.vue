@@ -80,11 +80,11 @@
 <script setup lang="ts">
 import { ref ,computed, onMounted} from 'vue'
 import { Search } from '@element-plus/icons-vue'
-import CommonTable from '../components/Table.vue';
-import { getrole,getdepart } from '../api/user';
+import CommonTable from '../../components/Table.vue';
+import { getrole,getdepart } from '../../api/user';
 import {  watch } from 'vue'
 import { ElTree } from 'element-plus'
-import SearchComponent from '../components/Search.vue'
+import SearchComponent from '../../components/Search.vue'
 const tableData = ref([]);
 const departmentData= ref([])
 const loading = ref(false);

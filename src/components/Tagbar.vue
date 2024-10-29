@@ -80,18 +80,18 @@ const handleTabRemove = (targetName) => {
 };
 
       
-      // 监听路由变化，动态更新当前选中的标签
-      watch(
-        () => router.currentRoute.value.path,
-        (newPath) => {
-          tabsStore.setActiveIndex(newPath); // 路由变化时更新 activeIndex
-        }
-      );
-      </script>
-      
-      <style scoped>
-      :deep(.el-tabs__header){
-        margin-bottom: 0px;
-      }
-      </style>
+// 监听路由变化，动态更新当前选中的标签
+watch(
+  () => router.currentRoute.value.path,
+  (newPath) => {
+    tabsStore.setActiveIndex(newPath); // 路由变化时更新 activeIndex
+  }
+);
+</script>
+
+<style scoped>
+:deep(.el-tabs__header){
+  margin-bottom: 0px;
+}
+</style>
       
