@@ -6,7 +6,7 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click='handleLogout'>取消登录</el-dropdown-item>
-                <el-dropdown-item @click="handleCommand('/manage/userinfo')">个人中心</el-dropdown-item>
+                <el-dropdown-item @click="handleCommand('/userinfo')">个人中心</el-dropdown-item>
                 <el-dropdown-item>添加</el-dropdown-item>
                 <el-dropdown-item>删除</el-dropdown-item>
               </el-dropdown-menu>
