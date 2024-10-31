@@ -10,27 +10,20 @@
         </el-header>
         <Tagbar></Tagbar>
 
-        <el-main style="background-color:rgb(248, 248 , 248) ;">
-          <!-- 使用 v-slot 来获取路由组件 -->
-          <router-view v-slot="{ Component }">
-            <!-- 将动态路由组件包裹在 <transition> 中 -->
-            <transition name="fade">
-              <div>
-                <component :is="Component" :key="$route.fullPath" />
-              </div>
-            </transition>
-          </router-view>
-                  </el-main>
+        <el-main style="background-color: rgb(248, 248, 248);">
+          <!-- 使用 router-view 来渲染路由组件 -->
+          <router-view></router-view>
+        </el-main>
         <el-footer>
-        
         </el-footer>
       </el-container>
     </el-container>
   </div>
 </template>
 
+
 <script setup>
-import Asidebar from '../components/Siderbar.vue'
+import Asidebar from '../components/Sidebar/Sidebar.vue'
 import Header from '../components/Header.vue'
 import { useAuthStore } from '../stores/auth';
 import Tagbar from '../components/Tagbar.vue'

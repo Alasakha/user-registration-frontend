@@ -10,7 +10,7 @@
         <div class="infomation_card">
                 <el-row>
                 <el-col :span="4"><div class="avatar" />
-                <el-image style="width: 100px; height: 100px" :src="url" :fit="fit" />
+                <el-image style="width: 100px; height: 100px" :src="url"  />
                 </el-col>
                 
                 <el-col :span="20"><div class="user_Info" />
