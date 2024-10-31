@@ -24,24 +24,29 @@ const props = defineProps({
   }
 })
 
+const { menu } = props // 解构 props 以便直接使用 menu
 const isOpen = ref(false)
 const router = useRouter()
 
+// 处理子菜单展开/收起
 const toggleSubmenu = () => {
   isOpen.value = !isOpen.value
 }
 
 // 处理点击事件
 const handleClick = () => {
-  // 直接使用 props.menu 访问 menu
-  const { menu } = props; // 解构 props 获取 menu
   if (menu.children && menu.children.length > 0) {
     toggleSubmenu() // 展开或收起子菜单
-  } else {
-    router.push(menu.path) // 路由跳转
+  } else if (menu.path) {
+    router.push(menu.path).catch(err => {
+      if (err.name !== 'NavigationDuplicated') {
+        console.error('路由跳转错误:', err)
+      }
+    })
   }
 }
 </script>
+
 <style scoped>
 .menu-item {
   padding: 10px;

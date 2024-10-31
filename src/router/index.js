@@ -1,17 +1,17 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import { getMenu } from '../api/menu'
+// import { createRouter, createWebHistory } from 'vue-router'
+// import { getMenu } from '../api/menu'
 
-// 静态基础路由
-const routes = [
-  { path: '/', redirect: '/home' },
-  { path: '/login', component: () => import('../views/Login.vue') },
-  { 
-    path: '/home', 
-     name: 'home',
-    component: () => import('../views/home.vue'), 
-    children: [] // 空的子路由，稍后添加动态路由
-  }
-]
+// // 静态基础路由
+// const routes = [
+//   { path: '/', redirect: '/home' },
+//   { path: '/login', component: () => import('../views/Login.vue') },
+//   { 
+//     path: '/home', 
+//      name: 'home',
+//     component: () => import('../views/home.vue'), 
+//     children: [] // 空的子路由，稍后添加动态路由
+//   }
+// ]
 
 // // 动态导入 views 目录下所有的 .vue 文件
 // const routeComponents = import.meta.glob('../views/**/*.vue')
@@ -114,35 +114,64 @@ const routes = [
 //   routes
 // })
 // console.log('routes:',routes)
+import { createRouter, createWebHistory,createMemoryHistory } from 'vue-router'
+import { getMenu } from '../api/menu'
+import NotFound from '../views/NotFound.vue'
 
-// 递归函数将树形结构转换为扁平数组
+const routes = [
+  { path: '/', redirect: '/home' },
+  { path: '/login', component: () => import('../views/Login.vue') },
+  { 
+    path: '/home', 
+    name: 'home',
+    component: () => import('../views/home.vue'), 
+    children: [] 
+  },
+
+]
+
+let menuLoaded = false
+
 function flattenMenu(menuTree) {
-  let flatMenu = [];
-
+  let flatMenu = []
   menuTree.forEach(menuItem => {
-    // 将当前菜单项添加到扁平数组中
     flatMenu.push({
       name: menuItem.name,
-      path: menuItem.path
-    });
-
-    // 如果有子菜单，递归处理
+      path: menuItem.path,
+      component: menuItem.children && menuItem.children.length > 0
+        ? () => import('../views/home.vue') 
+        : () => import(`../views${menuItem.path}.vue`).catch(() => NotFound)
+    })
     if (menuItem.children) {
-      flatMenu = flatMenu.concat(flattenMenu(menuItem.children));
+      flatMenu = flatMenu.concat(flattenMenu(menuItem.children))
     }
-  });
-
-  return flatMenu;
+  })
+  return flatMenu
 }
 
-getMenu()
-  .then(response => {
-    const flatMenu = flattenMenu(response.data); // 假设 response.data 是部门树形结构
-    console.log(flatMenu)
+function loadMenu() {
+  return getMenu().then(response => {
+    const flatMenu = flattenMenu(response.data)
+    const homeRoute = routes.find(route => route.path === '/home')
+    if (homeRoute) {
+      homeRoute.children.push(...flatMenu)
+    }
+    menuLoaded = true // 标记菜单加载完成
   })
-  .catch(error => {
-    console.error('获取菜单数据失败:', error);
-  });
+}
+
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes
+})
+
+// router.beforeEach((to, from, next) => {
+//   if (!menuLoaded) {
+//     loadMenu().then(() => next(to.fullPath)) // 菜单加载完成后重新导航
+//     console.log(routes);
+//   } else {
+//     next()
+//   }
+// })
 
 export default router
-
