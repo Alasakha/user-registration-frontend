@@ -119,59 +119,75 @@ import { getMenu } from '../api/menu'
 import NotFound from '../views/NotFound.vue'
 
 const routes = [
+  { path: '/login', component: () => import('../views/Login.vue') }, // 放在最前面
   { path: '/', redirect: '/home' },
-  { path: '/login', component: () => import('../views/Login.vue') },
   { 
     path: '/home', 
     name: 'home',
     component: () => import('../views/home.vue'), 
     children: [] 
   },
-
+  
 ]
+
 
 let menuLoaded = false
 
 function flattenMenu(menuTree) {
   let flatMenu = []
   menuTree.forEach(menuItem => {
+    const componentPath = `../views${menuItem.path}.vue`; // 拼接路径
+    console.log(`当前菜单项路径: ${menuItem.path}`);
+    console.log(`尝试加载组件路径: ${componentPath}`); // 打印组件路径
+
     flatMenu.push({
       name: menuItem.name,
       path: menuItem.path,
-      component: menuItem.children && menuItem.children.length > 0
-        ? () => import('../views/home.vue') 
-        : () => import(`../views${menuItem.path}.vue`).catch(() => NotFound)
-    })
-    if (menuItem.children) {
-      flatMenu = flatMenu.concat(flattenMenu(menuItem.children))
-    }
-  })
-  return flatMenu
-}
+      component: () => import(componentPath).catch(err => {
+        console.error(`加载组件失败: ${componentPath}`, err);
+        return import('../views/NotFound.vue'); // 确保有 NotFound 组件
+      })
+    });
 
-function loadMenu() {
+    if (menuItem.children) {
+      flatMenu = flatMenu.concat(flattenMenu(menuItem.children));
+    }
+  });
+  return flatMenu;
+}
+function loadMenu(router) {
   return getMenu().then(response => {
     const flatMenu = flattenMenu(response.data)
-    const homeRoute = routes.find(route => route.path === '/home')
+    const homeRoute = router.getRoutes().find(r => r.name === 'home')
+    
+    // 将路由添加到 `home` 的 `children` 中
     if (homeRoute) {
       homeRoute.children.push(...flatMenu)
+      flatMenu.forEach(route => {
+        router.addRoute('home', route)  // 将路由添加到 `home` 的子路由中
+      })
     }
-    menuLoaded = true // 标记菜单加载完成
+    menuLoaded = true 
+
+    console.log('当前路由列表:', router.getRoutes())
+    console.log('home 下的子路由:', homeRoute.children)  // 查看 `home` 的 `children` 是否包含子路由
   })
 }
 
 const router = createRouter({
-  history: createMemoryHistory(),
+  history: createWebHistory(),
   routes
 })
 
-// router.beforeEach((to, from, next) => {
-//   if (!menuLoaded) {
-//     loadMenu().then(() => next(to.fullPath)) // 菜单加载完成后重新导航
-//     console.log(routes);
-//   } else {
-//     next()
-//   }
-// })
-
+router.beforeEach((to, from, next) => {
+  if (to.path === '/login') {
+    next() // 允许访问登录页面
+  } else if (!menuLoaded) {
+    loadMenu(router).then(() => {
+      next({ ...to, replace: true }) // 菜单加载完成后重新导航
+    })
+  } else {
+    next()
+  }
+})
 export default router
