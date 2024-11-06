@@ -12,7 +12,7 @@ export const useTabsStore = defineStore('tabs', {
       if (!exists) {
         this.openTabs.push(tab);
         console.log('tabs.js里的openTabs:',this.openTabs);
-        
+    
       }
     },
     removeTab(route) {
@@ -21,9 +21,9 @@ export const useTabsStore = defineStore('tabs', {
         this.activeIndex = this.openTabs[this.openTabs.length - 1].route;
       }
     },
+
     setActiveIndex(route) {
       // console.log(route);
-      
       this.activeIndex = route;
     }
   }

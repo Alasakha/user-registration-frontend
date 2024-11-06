@@ -11,7 +11,7 @@
             
             <!-- 配置列，通过slots自定义列内容 -->
             <slot name="columns" :tableData="tableData"></slot>
-      
+
           </el-table>
       
           <!-- 分页 -->
@@ -24,7 +24,6 @@
             :current-page="currentPage"
             @current-change="handlePageChange"
             :disabled = "loading">
-            
           </el-pagination>
         </div>
       </template>

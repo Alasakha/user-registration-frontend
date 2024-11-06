@@ -1,6 +1,6 @@
 <template >
         <div>
-                        11111
+        <H1>404 NOT FOUND</H1>
         </div>
 </template>
 <script>

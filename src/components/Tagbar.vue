@@ -13,7 +13,7 @@
             :name="tab.route"
           />
         </el-tabs>
-      </template>
+</template>
       
       <script lang="ts" setup>
       import { computed, watch ,onMounted} from 'vue';

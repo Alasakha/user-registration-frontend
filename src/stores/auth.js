@@ -33,6 +33,7 @@ const setUser = (user) => {
   userInfo.value = user;
   localStorage.setItem('userInfo', JSON.stringify(user));
 }
+
 // 在 store 定义中
 watch(userInfo, (newVal) => {
   console.log('userInfo 已更新:', newVal);
