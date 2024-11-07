@@ -13,12 +13,11 @@
             </template>
           </el-dropdown>
         </div>
-        
 <div class="tag_box">
 
 
 </div>
-  </template>
+</template>
       
 <script setup>
 import { computed ,ref} from 'vue'
@@ -29,7 +28,7 @@ import { useTabsStore } from '../stores/tabs';
 const authStore = useAuthStore()
 const {userInfo} = storeToRefs(authStore)
 const router = useRouter()
-
+const tabsStore =useTabsStore
 
 // 定义登出处理函数
 function handleLogout() {
@@ -53,5 +52,7 @@ function handleCommand(path) {
 
 
 <style>
+
+
 
 </style>

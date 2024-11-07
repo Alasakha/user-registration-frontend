@@ -116,7 +116,7 @@
 // console.log('routes:',routes)
 import { createRouter, createWebHistory,createMemoryHistory } from 'vue-router'
 import { getMenu } from '../api/menu'
-import NotFound from '../views/NotFound.vue'
+
 
 const routes = [
   { path: '/login', component: () => import('../views/Login.vue') }, // 放在最前面
