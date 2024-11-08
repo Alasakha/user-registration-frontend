@@ -137,8 +137,6 @@ function flattenMenu(menuTree) {
   let flatMenu = []
   menuTree.forEach(menuItem => {
     const componentPath = `../views${menuItem.path}.vue`; // 拼接路径
-    console.log(`当前菜单项路径: ${menuItem.path}`);
-    console.log(`尝试加载组件路径: ${componentPath}`); // 打印组件路径
 
     flatMenu.push({
       name: menuItem.name,
@@ -155,6 +153,7 @@ function flattenMenu(menuTree) {
   });
   return flatMenu;
 }
+
 function loadMenu(router) {
   return getMenu().then(response => {
     const flatMenu = flattenMenu(response.data)
@@ -168,9 +167,6 @@ function loadMenu(router) {
       })
     }
     menuLoaded = true 
-
-    console.log('当前路由列表:', router.getRoutes())
-    console.log('home 下的子路由:', homeRoute.children)  // 查看 `home` 的 `children` 是否包含子路由
   })
 }
 
