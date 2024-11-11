@@ -1,20 +1,19 @@
 <template>
   <el-menu
-    :default-active="activeIndex"
+  default-active="2"
     class="el-menu-vertical-demo"
     background-color="#333"
     text-color="#fff"
-    active-text-color="#ffd04b"
   >
-    <el-menu-item
-      v-if="!menu.children || menu.children.length === 0"
-      :index="menu.path"
-      @click="handleClick"
-    >
-      <span>{{ menu.name }}</span>
-    </el-menu-item>
+  <el-menu-item
+  v-if="!menu.children || menu.children.length === 0"
+  :index="menu.path"
+  @click="handleClick(menu.path)"
+>
+  <span>{{ menu.name }}</span>
+</el-menu-item>
 
-    <el-submenu v-else :index="menu.path">
+    <el-sub-menu v-else :index="menu.path">
       <template #title>
         <span>{{ menu.name }}</span>
       </template>
@@ -23,7 +22,7 @@
         :key="child.id"
         :menu="child"
       />
-    </el-submenu>
+    </el-sub-menu>
   </el-menu>
 </template>
 
@@ -46,25 +45,18 @@ const { menu } = props // 解构 props 以便直接使用 menu
 const activeIndex = ref('') // 记录当前激活的菜单路径
 
 // 处理点击事件
-const handleClick = () => {
+const handleClick = (path) => {
   if (!menu.children || menu.children.length === 0) {
-    // 没有子菜单时，添加标签页并跳转
-
-    // 1. 添加标签页
-    tabsStore.addTab({ name: menu.name, route: menu.path })
-
-    // 2. 设置当前激活标签页
-    tabsStore.setActiveIndex(menu.path)
-    activeIndex.value = menu.path
-
-    // 3. 跳转到指定路径
+    activeIndex.value = path;  // 设置当前激活菜单路径
+    tabsStore.addTab({ name: menu.name, route: menu.path });
+    tabsStore.setActiveIndex(menu.path);
     router.push(menu.path).catch(err => {
       if (err.name !== 'NavigationDuplicated') {
-        console.error('路由跳转错误:', err)
+        console.error('路由跳转错误:', err);
       }
-    })
+    });
   }
-}
+};
 </script>
 
 <style scoped>

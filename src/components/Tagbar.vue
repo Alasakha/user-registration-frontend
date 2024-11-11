@@ -52,9 +52,7 @@
       
       // 处理标签点击事件，实现路由切换
       const handleTabClick = (tab) => {
-        console.log('点击当前tab:', tab); // 打印出整个tab对象看看
         const routeName = tab.paneName; // 从 `paneName` 中获取路由地址
-        console.log('routeName:',routeName);
         
         if (routeName) {
           tabsStore.setActiveIndex(routeName); // 设置当前激活的标签

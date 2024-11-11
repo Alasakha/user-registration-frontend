@@ -98,7 +98,6 @@ const fetchTableData = async (page = 1) => {
   try {
     const response = await getrole(page,pageSize.value);
     tableData.value = response.data;
-    console.log(tableData.value);
     total.value = response.total;
     currentPage.value = page;
   } catch (error) {
@@ -126,7 +125,6 @@ const getdepartment = async () => {
 
 // 排序事件处理
 const handleSortChange = (sort) => {
-  console.log('排序:', sort);
   fetchTableData();
 };
 
