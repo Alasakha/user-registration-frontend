@@ -52,7 +52,7 @@
     <el-col :span="12"><div class="grid-content ep-bg-purple" />
       <div class="block">
         <span class="title">菜单名称</span>
-        <el-input v-model="input" style="width: 240px" placeholder="Please input" />
+        <el-input v-model="newMenuData.name" style="width: 240px" placeholder="Please input" />
       </div>
   </el-col>
     <el-col :span="12" ><div class="grid-content ep-bg-purple" />
@@ -67,7 +67,7 @@
     <el-col :span="12"><div class="grid-content ep-bg-purple" />
       <div class="block">
         <span class="title">路由路径</span>
-        <el-input v-model="input" style="width: 240px" placeholder="Please input" />
+        <el-input v-model="newMenuData.path" style="width: 240px" placeholder="Please input" />
       </div>
   </el-col>
     <el-col :span="12" ><div class="grid-content ep-bg-purple" />
@@ -77,9 +77,6 @@
       </div> -->
     </el-col>
   </el-row>
-
-
-
   </div>
 
   
@@ -89,7 +86,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="dialogAddVisible = false">取消</el-button>
-        <el-button type="primary" @click="AddNewMenu">
+        <el-button type="primary" @click="addNewMenu">
           新增
         </el-button>
       </div>
@@ -102,7 +99,7 @@
 import { onMounted , ref} from 'vue';
 import axios from 'axios';
 import { ElTable } from 'element-plus'
-import { getMenu } from '../../api/menu';
+import { getMenu ,PostMenu } from '../../api/menu';
 import { ElMessageBox } from 'element-plus'
 
 const menuData =ref()
@@ -115,7 +112,13 @@ const props1 = {
   checkStrictly: true,
 }
 const MenuValue = ref('')
-
+const newMenuData = ref({
+  name: '', 
+  path: '', 
+  sort_order: 0, 
+  status: 1,
+  parent_id:null,
+});
 
 interface User {
   date: string
@@ -149,7 +152,23 @@ const getMenuInfo = async () => {
   }
 };
 
-
+// 增加菜单函数
+const addNewMenu = async () => {
+  try {
+    const newMenu = {
+      name: newMenuData.value.name,
+      path: newMenuData.value.path,
+      sort_order: newMenuData.value.sort_order,
+      status: newMenuData.value.status,
+      parent_id: newMenuData.value.parent_id,
+    };
+    await PostMenu(newMenu);
+    dialogAddVisible.value = false;
+    await getMenuInfo(); // 刷新菜单列表
+  } catch (error) {
+    console.error('添加菜单失败:', error);
+  }
+};
 
 //点击增加按钮
 const handleClickAdd = () =>{
@@ -168,7 +187,6 @@ const handleClose = (done: () => void) => {
 }
 
 // 数组映射
-
 const formatMenuData = (data: any[]) => {
    // 检查 data 是否是数组
    if (!Array.isArray(data)) {
@@ -190,7 +208,7 @@ const formatMenuData = (data: any[]) => {
 };
 
 const AddNewMenu = () =>{
-  dialogVisible.value = false
+  dialogAddVisible.value = false
   console.log('MenuValue:',MenuValue.value);
   
 }

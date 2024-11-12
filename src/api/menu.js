@@ -41,3 +41,14 @@ export const getMenu = () => {
     throw error;
   });
 }
+
+//创建菜单
+export const PostMenu = async(Menu) =>{
+  try {
+    const response = await request.post('/manage/createmenu', Menu);
+    return response.data;  // 返回响应数据
+} catch (error) {
+    console.error('创建部门失败:', error);
+    throw error;  // 重新抛出错误以供上层处理
+}
+}
