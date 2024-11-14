@@ -52,3 +52,17 @@ export const PostMenu = async(Menu) =>{
     throw error;  // 重新抛出错误以供上层处理
 }
 }
+
+//删除菜单
+export const DeletMenu = async (id) => {
+  try {
+    // 发送 DELETE 请求
+    const response = await request.delete(`/manage/deletemenu/${id}`);
+    // 返回成功结果
+    return response.data;
+  } catch (error) {
+    // 如果删除失败，打印错误并返回错误信息
+    console.error('删除菜单失败:', error);
+    throw error;
+  }
+};

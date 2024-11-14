@@ -13,12 +13,12 @@
           <el-table-column property="status" label="开关" min-width="80"/>
 
           <el-table-column fixed="right" label="操作" min-width="120">
-            <template #default>
+            <template #default="scope">
               <el-button link type="primary" size="small" @click="handleClickAdd">
                 新增
               </el-button>
               <el-button link type="primary" size="small">修改</el-button>
-              <el-button link type="primary" size="small">删除</el-button>
+              <el-button link type="primary" size="small" @click="handleDelete(scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -41,10 +41,10 @@
 
     <div class="block">
       <span class="title">菜单类型</span>
-    <el-radio-group v-model="radio1">
-      <el-radio value="1" size="large">目录</el-radio>
-      <el-radio value="2" size="large">菜单</el-radio>
-      <el-radio value="3" size="large">按钮</el-radio>
+    <el-radio-group v-model="newMenuData.type">
+      <el-radio value=0 size="large">菜单</el-radio>
+      <el-radio value=1 size="large">目录</el-radio>
+      <el-radio value=2 size="large">按钮</el-radio>
     </el-radio-group>
   </div>
 
@@ -96,28 +96,34 @@
 
 
 <script lang="ts" setup>
-import { onMounted , ref} from 'vue';
+import { computed, onMounted , ref ,watch} from 'vue';
 import axios from 'axios';
 import { ElTable } from 'element-plus'
-import { getMenu ,PostMenu } from '../../api/menu';
+import { getMenu ,PostMenu ,DeletMenu } from '../../api/menu';
 import { ElMessageBox } from 'element-plus'
+
+import { useMenuStore } from '../../stores/menu';
+const menuStore = useMenuStore();
+const updateMenu = (newMenuData) => {
+  menuStore.setMenuData(newMenuData);  // 更新全局菜单数据
+};
+
 
 const menuData =ref()
 const dialogAddVisible = ref(false)
-const radio1 = ref('1')
-const radio2 = ref('1')
-const radio3 = ref('1')
 const input = ref('')
 const props1 = {
   checkStrictly: true,
 }
 const MenuValue = ref('')
+
 const newMenuData = ref({
   name: '', 
   path: '', 
   sort_order: 0, 
   status: 1,
   parent_id:null,
+  type: 0,
 });
 
 interface User {
@@ -133,6 +139,7 @@ onMounted(() => {
 const getMenuInfo = async () => {
   try {
     const response = await getMenu();
+    updateMenu(response.data)
     // 将实际菜单数据格式化
     const formattedMenuData = formatMenuData(response.data);
 
@@ -140,9 +147,10 @@ const getMenuInfo = async () => {
     menuData.value = [
       {
         name:'顶级菜单',
-        value: '顶级菜单',
+        value: 'null',
         label: "顶层菜单",
         children: formattedMenuData,
+        type:1,
       },
     ];
 
@@ -155,13 +163,16 @@ const getMenuInfo = async () => {
 // 增加菜单函数
 const addNewMenu = async () => {
   try {
+    const selectedMenuID = MapParentid.value
     const newMenu = {
       name: newMenuData.value.name,
       path: newMenuData.value.path,
       sort_order: newMenuData.value.sort_order,
       status: newMenuData.value.status,
-      parent_id: newMenuData.value.parent_id,
+      parent_id: selectedMenuID ? selectedMenuID : null,
+      type: Number(newMenuData.value.type),
     };
+    console.log('newMenu:',newMenu)
     await PostMenu(newMenu);
     dialogAddVisible.value = false;
     await getMenuInfo(); // 刷新菜单列表
@@ -197,7 +208,7 @@ const formatMenuData = (data: any[]) => {
   return data.map(item => ({
     ID: item.id,
     name: item.name,
-    value: item.name,
+    value: item.id,
     label: item.name,
     CreateAt: item.CreatedAt, 
     sort_order: item.sort_order,
@@ -207,13 +218,37 @@ const formatMenuData = (data: any[]) => {
   }));
 };
 
-const AddNewMenu = () =>{
-  dialogAddVisible.value = false
-  console.log('MenuValue:',MenuValue.value);
-  
-}
-</script>
+// 删除菜单
+const handleDelete = async (menu) => {
+  try {
+    // 调用删除菜单的 API
+    const response = await DeletMenu(menu.ID);
+    
+    // 删除成功后，直接从菜单列表中移除该项
+   // 获取初始菜单列表
+   getMenuInfo();
 
+    // 提示用户删除成功
+  } catch (error) {
+    console.error('删除菜单失败:', error);
+  }
+};
+
+watch(MenuValue, (newValue, oldValue) => {
+  // 当 source 发生变化时，执行这个回调
+  console.log('newValue:', newValue);
+  console.log('oldValue:', oldValue);
+});
+
+const MapParentid = computed(() => {
+  if (MenuValue.value.length > 1) {
+    // 获取级联选择器选中的最后一个菜单项
+    console.log('Menuvalue.length:',MenuValue.value.length)
+    return MenuValue.value[MenuValue.value.length - 1]; // 最后一个级联选中的项
+  }
+  return null; // 如果没有选中任何数据，返回 null
+});
+</script>
 
 <style scoped lang="scss">
 .add_menu_box{
