@@ -71,12 +71,39 @@
       </div>
   </el-col>
     <el-col :span="12" ><div class="grid-content ep-bg-purple" />
-      <!-- <div class="block">
-        <span class="title">接口规则</span>
-        <el-input v-model="input" style="width: 240px" placeholder="Please input" />
-      </div> -->
+      <div class="block">
+        <span class="title">菜单排序</span>
+      <el-input-number
+          v-model="newMenuData.sort_order"
+          class="mx-4"
+          :min="1"
+          :max="10"
+          controls-position="right"
+          @change="handleChange"
+        />
+      </div>
     </el-col>
   </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="12"><div class="grid-content ep-bg-purple" />
+          <div class="block">
+              <span class="title">是否隐藏</span>
+            <el-radio-group v-model="newMenuData.status">
+              <el-radio value=1 size="large">否</el-radio>
+              <el-radio value=0 size="large">是</el-radio>
+            </el-radio-group>
+          </div>
+      </el-col>
+        <el-col :span="12" ><div class="grid-content ep-bg-purple" />
+          <div class="block"> 
+            <span class="title">接口规则</span>
+            
+          </div>
+        </el-col>
+      </el-row>
+   
+  
   </div>
 
   
@@ -106,6 +133,7 @@ import { useMenuStore } from '../../stores/menu';
 const menuStore = useMenuStore();
 const updateMenu = (newMenuData) => {
   menuStore.setMenuData(newMenuData);  // 更新全局菜单数据
+  menuStore.fetchMenuData()
 };
 
 
@@ -139,7 +167,7 @@ onMounted(() => {
 const getMenuInfo = async () => {
   try {
     const response = await getMenu();
-    updateMenu(response.data)
+   
     // 将实际菜单数据格式化
     const formattedMenuData = formatMenuData(response.data);
 
@@ -168,17 +196,19 @@ const addNewMenu = async () => {
       name: newMenuData.value.name,
       path: newMenuData.value.path,
       sort_order: newMenuData.value.sort_order,
-      status: newMenuData.value.status,
+      status: Number(newMenuData.value.status),
       parent_id: selectedMenuID ? selectedMenuID : null,
       type: Number(newMenuData.value.type),
     };
     console.log('newMenu:',newMenu)
     await PostMenu(newMenu);
     dialogAddVisible.value = false;
-    await getMenuInfo(); // 刷新菜单列表
+    await menuStore.fetchMenuData(); // 刷新菜单数据
+    await getMenuInfo()
   } catch (error) {
     console.error('添加菜单失败:', error);
   }
+  
 };
 
 //点击增加按钮
@@ -227,7 +257,7 @@ const handleDelete = async (menu) => {
     // 删除成功后，直接从菜单列表中移除该项
    // 获取初始菜单列表
    getMenuInfo();
-
+   await menuStore.fetchMenuData(); // 刷新菜单数据
     // 提示用户删除成功
   } catch (error) {
     console.error('删除菜单失败:', error);
