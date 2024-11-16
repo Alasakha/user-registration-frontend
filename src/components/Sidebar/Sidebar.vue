@@ -9,20 +9,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted,watch } from 'vue'
-import SidebarItem from './SidebarItem.vue'
+import SidebarItem from './SidebarItem.vue';
 import { useMenuStore } from '../../stores/menu';
-import { getMenu } from '../../api/menu';
-
+import { onMounted } from 'vue';
 // 获取 Pinia store
 const menuStore = useMenuStore();
 
 // 在组件挂载时调用获取菜单数据的函数
 onMounted(async () => {
-  await menuStore.fetchMenuData();  // 确保异步请求完成
+  await menuStore.fetchMenuData(); // 确保异步请求完成
 });
-
-
 </script>
 
 <style scoped>

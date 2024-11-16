@@ -123,21 +123,16 @@
 
 
 <script lang="ts" setup>
-import { computed, onMounted , ref ,watch} from 'vue';
-import axios from 'axios';
+import { computed, onMounted , ref ,watch , reactive} from 'vue';
 import { ElTable } from 'element-plus'
 import { getMenu ,PostMenu ,DeletMenu } from '../../api/menu';
 import { ElMessageBox } from 'element-plus'
 
 import { useMenuStore } from '../../stores/menu';
 const menuStore = useMenuStore();
-const updateMenu = (newMenuData) => {
-  menuStore.setMenuData(newMenuData);  // 更新全局菜单数据
-  menuStore.fetchMenuData()
-};
 
 
-const menuData =ref()
+const menuData =reactive([])
 const dialogAddVisible = ref(false)
 const input = ref('')
 const props1 = {
@@ -145,7 +140,7 @@ const props1 = {
 }
 const MenuValue = ref('')
 
-const newMenuData = ref({
+const newMenuData = reactive({
   name: '', 
   path: '', 
   sort_order: 0, 
@@ -154,11 +149,6 @@ const newMenuData = ref({
   type: 0,
 });
 
-interface User {
-  date: string
-  name: string
-  address: string
-}
 
 onMounted(() => {
   getMenuInfo()
@@ -171,18 +161,16 @@ const getMenuInfo = async () => {
     // 将实际菜单数据格式化
     const formattedMenuData = formatMenuData(response.data);
 
-    // 包裹顶层节点
-    menuData.value = [
-      {
-        name:'顶级菜单',
-        value: 'null',
-        label: "顶层菜单",
-        children: formattedMenuData,
-        type:1,
-      },
-    ];
+    // 修改响应式对象的内容
+    menuData.splice(0, menuData.length, {
+      name: '顶级菜单',
+      value: 'null',
+      label: "顶层菜单",
+      children: formattedMenuData,
+      type: 1,
+    });
 
-    console.log("menuData.value:", menuData.value);
+    console.log("menuData:", menuData);
   } catch (error) {
     console.error('获取菜单数据失败:', error);
   }
@@ -193,12 +181,12 @@ const addNewMenu = async () => {
   try {
     const selectedMenuID = MapParentid.value
     const newMenu = {
-      name: newMenuData.value.name,
-      path: newMenuData.value.path,
-      sort_order: newMenuData.value.sort_order,
-      status: Number(newMenuData.value.status),
+      name: newMenuData.name,
+      path: newMenuData.path,
+      sort_order: newMenuData.sort_order,
+      status: Number(newMenuData.status),
       parent_id: selectedMenuID ? selectedMenuID : null,
-      type: Number(newMenuData.value.type),
+      type: Number(newMenuData.type),
     };
     console.log('newMenu:',newMenu)
     await PostMenu(newMenu);
@@ -227,20 +215,17 @@ const handleClose = (done: () => void) => {
     })
 }
 
-// 数组映射
-const formatMenuData = (data: any[]) => {
-   // 检查 data 是否是数组
-   if (!Array.isArray(data)) {
+// 格式化菜单数据
+const formatMenuData = (data) => {
+  if (!Array.isArray(data)) {
     console.error('Data is not an array or is undefined:', data);
     return [];
   }
-  // 根据实际需要处理数据的格式
-  return data.map(item => ({
+  return data.map((item) => ({
     ID: item.id,
     name: item.name,
     value: item.id,
     label: item.name,
-    CreateAt: item.CreatedAt, 
     sort_order: item.sort_order,
     status: item.status,
     path: item.path,
